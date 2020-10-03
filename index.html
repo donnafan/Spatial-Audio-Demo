@@ -13,11 +13,28 @@
 </head>
 
 <body>
-<audio src="singleclap.wav"></audio>
-  <h2>Hello World.</h2>
-  <button data-playing="false" role="switch" aria-checked="false">
-    <span>Play/Pause</span>
-</button>
-<script src="js/script.js"></script>
+  <h1>Wear headphones.</h1>
+  <h3>Try to simulate sound coming from your left and right!</h3>
+
+  <button onclick="playPause()">play/pause</button>
+  <br><br>
+  <!-- <button onclick="setBalance(-1)">Left</button>
+  <button onclick="setBalance(0)">Center</button>
+  <button onclick="setBalance(+1)">Right</button> -->
+
+  <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
+  <br> Volume <br><br>
+  <input type="range" id="Lvolume" min="0" max="2" value="1" step="0.01">
+  <br> Left Volume <br><br>
+  <input type="range" id="Rvolume" min="0" max="2" value="1" step="0.01">
+  <br> Right Volume <br><br>
+  <input type="range" id="DelayL" min="0" max="0.001" value="0" step="0.00001">
+  <br> Left Delay (0-1ms) <br><br>
+  <input type="range" id="DelayR" min="0" max="0.001" value="0" step="0.00001">
+  <br> Right Delay (0-1ms)<br><br>
+
+<br><br> Hint: To simulate a sound coming from the left, increase the left volume and the right delay.
+
+<script src="js/scripts.js"></script>
 </body>
 </html>
