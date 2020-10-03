@@ -42,10 +42,12 @@ function setUpAudio(track) {
     volumeControlR.addEventListener('input', function() {
         gainNodeR.gain.value = this.value;
     }, false);
-    const delayL = document.querySelector('#DelayL');
-    delayL.addEventListener('input', function() {
-        delayNodeL.delayTime.value = this.value;
-    }, false);
+    // const delayL = document.querySelector('#DelayL');
+    // delayL.addEventListener('input', function() {
+    //     delayNodeL.delayTime.value = this.value;
+    // }, false);
+    delayNodeL.delayTime.value = 0.001
+    delayNodeR.delayTime.value=0.001
         const delayR = document.querySelector('#DelayR');
     delayR.addEventListener('input', function() {
         delayNodeR.delayTime.value = this.value;

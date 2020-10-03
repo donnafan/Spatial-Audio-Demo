@@ -50,6 +50,18 @@ select {
     margin: 5px;
 }
 
+.alignleft {
+	float: left;
+}
+.aligncentre {
+    float: left;
+    margin-left: 33%;
+}
+.alignright {
+	float: right;
+}
+
+
 .slider {
     -webkit-appearance: none;
     width: 100%;
