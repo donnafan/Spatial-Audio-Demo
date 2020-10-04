@@ -30,26 +30,22 @@
       
       <button class="button" onclick="playPause()"></button>
     </div>
-
-    <!-- <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
-    <br> Volume <br><br> -->
-
+    
     <div class="inputContainer">
       <div class="input"> 
-        <br> Left Volume <br><br>
-        <input class="slider" type="range" id="Lvolume" min="0" max="2" value="1" step="0.01">
-        <!-- <br> Left Delay (0-1ms) <br><br>
-        <input class="slider" type="range" id="DelayL" min="0" max="0.001" value="0" step="0.00001"> -->
-      <!-- </div> -->
-      <!-- <div class="input">  -->
-        <br> Right Volume <br><br>
-        <input class="slider" type="range" id="Rvolume" min="0" max="2" value="1" step="0.01">
         <br> <div id="textbox">
-          <p class="alignleft">Left Delay</p>
-          <p class ="aligncentre">No Delay</p>
-          <p class="alignright">Right Delay</p>
+          <p class="alignleft">Left</p>
+          <p class ="aligncentre">Volume Difference</p>
+          <p class="alignright">Right</p>
         </div>
-        <input class="slider" type="range" id="DelayR" min="0" max="0.002" value="0.001" step="0.00001">
+        <input class="slider" type="range" id="gainPan" min="-0.8" max="0.8" value="0" step="0.01">
+
+        <br> <div id="textbox">
+          <p class="alignleft">Left</p>
+          <p class ="aligncentre">Timing Difference</p>
+          <p class="alignright">Right</p>
+        </div>
+        <input class="slider" type="range" id="DelayL" min="0" max="0.002" value="0.001" step="0.00001">
       </div>
     </div>
 
