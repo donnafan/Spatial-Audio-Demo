@@ -13,7 +13,7 @@ let audioContext;
 spatialWidget(trackSelection.value);
 
 function spatialWidget(track) {
-    audioElement = new Audio(`../${track}`);
+    audioElement = new Audio(track);
 
     audioContext = new AudioContext();
     const audioSource = audioContext.createMediaElementSource(audioElement);
@@ -32,14 +32,32 @@ function spatialWidget(track) {
     const panControl = document.querySelector('#gainPan');
     panControl.addEventListener('input', function(){
       panNode.pan.value = this.value;
+      panValue = this.value;
+      if (panValue <=0){
+      gainValueR.innerHTML = String(100+Math.round(panValue*100)) + "%";
+      gainValueL.innerHTML = "100%"
+      }
+      if (panValue >0){
+        gainValueR.innerHTML = "100%"
+        gainValueL.innerHTML = String(100-Math.round(panValue*100)) + "%";
+      }
     }, false)
     delayNodeL.delayTime.value=0.001
-        const delayL = document.querySelector('#DelayL');
+      const delayL = document.querySelector('#DelayL');
     delayL.addEventListener('input', function() {
-        delayNodeL.delayTime.value = this.value;
+      delayNodeL.delayTime.value = this.value;
+      if (this.value<=0.001){
+        delayValueR.innerHTML = "0 ms"
+        delayValueL.innerHTML = String((1-(this.value*1000)).toFixed(2)) + " ms"
+      }
+      if (this.value>0.001){
+        delayValueL.innerHTML = "0 ms"
+        delayValueR.innerHTML = String(((this.value*1000)-1).toFixed(2)) + " ms"
+      }
     }, false);
     delayNodeR.delayTime.value = 0.001
 
+    
     //audioSource.connect(gainNode).connect(splitterNode)
     audioSource.connect(panNode, 0).connect(splitterNode); //take only channel 0 if source is stereo
     splitterNode.connect(delayNodeL, 0); // connect splitter output channel 0

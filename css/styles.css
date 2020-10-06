@@ -51,9 +51,15 @@ select {
 }
 
 .alignleft {
+    display: flex;
+    flex-direction:column;
 	float: left;
 }
 .aligncentre {
+    float: left;
+    margin-left: 33%;
+}
+.aligncentret {
     float: left;
     margin-left: 35%;
 }
