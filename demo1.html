@@ -5,10 +5,10 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Sound Spatialization Widget</title>
+  <title>Sound Spatialization Demo</title>
   <meta name="description" content="Spatial sound demo">
   <meta name="author" content="Donna Fan">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/demo1.css">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
 </head>
 
@@ -34,9 +34,11 @@
     <div class="inputContainer">
       <div class="input"> 
         <br> <div id="textbox">
-          <p class="alignleft">Left volume</p>
-          <p class ="aligncentre">Volume Difference</p> 
-          <p class="alignright">Right volume</p>
+          <div class="spaceeven"> 
+            <p>Left volume</p>
+            <p>Volume Difference</p>
+            <p>Right volume</p>
+          </div>
         </div>
         <div id="textbox">
         <div class="alignleft" id="gainValueL">100%</div>
@@ -45,9 +47,11 @@
         <input class="slider" type="range" id="gainPan" min="-0.8" max="0.8" value="0" step="0.01">
 
         <br> <div id="textbox">
-          <p class="alignleft">Left delay    </p>
-          <p class ="aligncentret">Timing Difference</p>
-          <p class="alignright">Right delay</p>
+          <div class="spaceeven"> 
+            <p>Left delay</p>
+            <p>Timing Difference</p>
+            <p>Right delay</p>
+          </div>
         </div>
         <div id="textbox">
           <div class="alignleft" id="delayValueL">0 ms</div>
