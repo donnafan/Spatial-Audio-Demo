@@ -6,10 +6,12 @@
   <title>Virtual 3D Sound</title>
   <meta name="description" content="Virtual 3D Sound Simulation">
   <meta name="author" content="Donna Fan">
+  <link rel="stylesheet" href="css/demo2.css">
 </head>
 
 <body style="background-color: black;">
   <script src="js/hrtf.js"></script>
+  <div id="info">Click and drag to move around the model. The sound is coming from the camera.</div>
   <div id="container"></div>
   <script type="module">
     let audioElement;
@@ -18,8 +20,8 @@
     let panner;
     let isPlaying
     let track = {
-      audio: "0",
-      HRTF: "0",
+      Audio: "0",
+      HeadShape: "0",
       PlayPause: function () {
         if (audioContext.state === 'suspended') {
           audioContext.resume();
@@ -38,14 +40,14 @@
     
     import { GUI } from './jsm/libs/dat.gui.module.js';
     var gui = new GUI();
-    gui.add(track, "audio", {Helicopter: "helicopter.wav", Bee: "bee.wav" }).onChange(function (value) {
+    gui.add(track, "Audio", {Helicopter: "helicopter.wav", Bee: "bee.wav", Music: "etude.mp3" }).onChange(function (value) {
       audioElement.pause();
-      spatialize(track.HRTF, value)
+      spatialize(track.HeadShape, value)
     });
-    gui.add(track, "HRTF", { 1: "hrir/subject_003.bin", 2: "hrir/subject_008.bin", 3: "hrir/subject_009.bin", 4: "hrir/subject_010.bin", 5: "hrir/subject_011.bin", 6: "hrir/subject_012.bin", 7: "hrir/subject_015.bin", 8: "hrir/subject_017.bin", 9: "hrir/subject_018.bin", 10: "hrir/subject_019.bin", 11: "hrir/subject_020.bin" }).onChange(function (value) {
+    gui.add(track, "HeadShape", {Large_Male: "hrir/subject_003.bin", Small_Female: "hrir/subject_010.bin", Medium_Female: "hrir/subject_018.bin", Medium_Male: "hrir/subject_020.bin", Small_Male: "hrir/subject_027.bin", Large_Female: "hrir/subject_048.bin", Child: "hrir/subject_040.bin"}).onChange(function (value) {
       audioElement.pause();
       isPlaying = false;
-      spatialize(value, track.audio);
+      spatialize(value, track.Audio);
     });
     gui.add(track, "PlayPause");
     gui.open();
@@ -154,7 +156,7 @@
 
 
   </script>
-  <p style="color:darkslategrey">Bee sound attribution: https://freesound.org/people/iainmccurdy/sounds/498416/</p>
+  <p style="color:darkslategrey">Sound attribution <a href=https://freesound.org/people/iainmccurdy/sounds/498416/>bee</a> <a href="https://icons8.com/music/author/ilya-truhanov-1">music by Ilya Truhanov</a></p>
 </body>
 
 </html>
