@@ -1,126 +1,160 @@
-  <!doctype html>
-  <html lang="en">
+<!doctype html>
+<html lang="en">
 
-  <head>
-    <meta charset="utf-8">
-    <title>Virtual 3D Sound</title>
-    <meta name="description" content="Virtual 3D Sound Simulation">
-    <meta name="author" content="Donna Fan">
-  </head>
+<head>
+  <meta charset="utf-8">
+  <title>Virtual 3D Sound</title>
+  <meta name="description" content="Virtual 3D Sound Simulation">
+  <meta name="author" content="Donna Fan">
+</head>
 
-  <body>
-    <script src="js/hrtf.js"></script>
-    <div id="container"></div>
-    <script type="module">
-        
-        let audioElement;
-        let audioContext;
-        // load hrir to the container
-        var hrtfContainer = new HRTFContainer();
-        hrtfContainer.loadHrir("hrir/subject_003.bin");
-        audioElement = new Audio("roundabout.mp3");
-        audioContext = new AudioContext();
-        const audioSource = audioContext.createMediaElementSource(audioElement);
-        var gain = audioContext.createGain();
-        gain.gain.value = 0.5;
-        audioSource.connect(gain, 0);
-        // create new hrtf panner, source node gets connected automatically
-        var panner = new HRTFPanner(audioContext, gain, hrtfContainer);
-        panner.connect(audioContext.destination);
-        audioElement.play();
+<body style="background-color: black;">
+  <script src="js/hrtf.js"></script>
+  <div id="container"></div>
+  <script type="module">
+    let audioElement;
+    let audioContext;
+    let hrtfContainer;
+    let panner;
+    let isPlaying
+    let track = {
+      audio: "0",
+      HRTF: "0",
+      PlayPause: function () {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
 
-
-
-      import * as THREE from './build/three.module.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-
-      var container = document.getElementById('container');
-
-      var renderer, scene, camera, stats;
-      var mesh;
-      let x1, x2, x3
-      var textureLoader = new THREE.TextureLoader();
-
-      window.addEventListener('load', init);
-
-      function init() {
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        scene = new THREE.Scene();
-
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.z = 200;
-        camera.target = new THREE.Vector3();
-
-        var controls = new OrbitControls(camera, renderer.domElement);
-        controls.minDistance = 200;
-        controls.maxDistance = 200;
-
-        scene.add(new THREE.AmbientLight(0x443333));
-
-        var light = new THREE.DirectionalLight(0xffddcc, 1);
-        light.position.set(1, 0.75, 0.5);
-        scene.add(light);
-
-        var light = new THREE.DirectionalLight(0xccccff, 1);
-        light.position.set(- 1, 0.75, - 0.5);
-        scene.add(light);
-
-        var geometry = new THREE.BufferGeometry();
-        geometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-
-        loadLeePerrySmith();
-
-        window.addEventListener('resize', onWindowResize, false);
-        onWindowResize();
-        animate();
-
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          audioElement.play();
+        } else {
+          audioElement.pause();
+        }
       }
+    }
 
-      function loadLeePerrySmith() {
+    spatialize(track.hrir, track.audio);
+    
+    import { GUI } from './jsm/libs/dat.gui.module.js';
+    var gui = new GUI();
+    gui.add(track, "audio", {Helicopter: "helicopter.wav", Bee: "bee.wav" }).onChange(function (value) {
+      audioElement.pause();
+      spatialize(track.HRTF, value)
+    });
+    gui.add(track, "HRTF", { 1: "hrir/subject_003.bin", 2: "hrir/subject_008.bin", 3: "hrir/subject_009.bin", 4: "hrir/subject_010.bin", 5: "hrir/subject_011.bin", 6: "hrir/subject_012.bin", 7: "hrir/subject_015.bin", 8: "hrir/subject_017.bin", 9: "hrir/subject_018.bin", 10: "hrir/subject_019.bin", 11: "hrir/subject_020.bin" }).onChange(function (value) {
+      audioElement.pause();
+      isPlaying = false;
+      spatialize(value, track.audio);
+    });
+    gui.add(track, "PlayPause");
+    gui.open();
 
-        var loader = new GLTFLoader();
+    function spatialize(hrir, audio) {
+      hrtfContainer = new HRTFContainer();
+      hrtfContainer.loadHrir(hrir);
+      audioElement = new Audio(audio);
+      audioContext = new AudioContext();
+      const audioSource = audioContext.createMediaElementSource(audioElement);
+      var gain = audioContext.createGain();
+      gain.gain.value = 0.8;
+      audioSource.connect(gain, 0);
+      // create new hrtf panner, source node gets connected automatically
+      panner = new HRTFPanner(audioContext, gain, hrtfContainer);
+      panner.connect(audioContext.destination);
+      audioElement.play();
+    }
 
-        loader.load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function (gltf) {
+    import * as THREE from './build/three.module.js';
+    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
-          mesh = gltf.scene.children[0];
-          scene.add(mesh);
-          mesh.scale.set(10, 10, 10);
+    var container = document.getElementById('container');
 
-        });
+    var renderer, scene, camera, stats;
+    var mesh;
+    let x1, x2, x3
+    var textureLoader = new THREE.TextureLoader();
 
-      }
+    window.addEventListener('load', init);
 
-      function onWindowResize() {
+    function init() {
 
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+      scene = new THREE.Scene();
 
-      }
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.z = 200;
+      camera.target = new THREE.Vector3();
 
-      function animate() {
+      var controls = new OrbitControls(camera, renderer.domElement);
+      controls.minDistance = 200;
+      controls.maxDistance = 200;
 
-        requestAnimationFrame(animate);
+      scene.add(new THREE.AmbientLight(0x443333));
 
-        renderer.render(scene, camera);
-        x1 = -1 * camera.position.x;
-        x2 = camera.position.z;
-        x3 = camera.position.y;
-        var cords = cartesianToInteraural(x1,x2,x3);
-		    panner.update(cords.azm, cords.elv);
-      }
+      var light = new THREE.DirectionalLight(0xffddcc, 1);
+      light.position.set(1, 0.75, 0.5);
+      scene.add(light);
+
+      var light = new THREE.DirectionalLight(0xccccff, 1);
+      light.position.set(- 1, 0.75, - 0.5);
+      scene.add(light);
+
+      var geometry = new THREE.BufferGeometry();
+      geometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+
+      loadLeePerrySmith();
+
+      window.addEventListener('resize', onWindowResize, false);
+
+      onWindowResize();
+      animate();
+
+    }
+
+    function loadLeePerrySmith() {
+
+      var loader = new GLTFLoader();
+
+      loader.load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function (gltf) {
+
+        mesh = gltf.scene.children[0];
+        scene.add(mesh);
+        mesh.scale.set(10, 10, 10);
+
+      });
+
+    }
+
+    function onWindowResize() {
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      renderer.render(scene, camera);
+      x1 = -1 * camera.position.x;
+      x2 = camera.position.z;
+      x3 = camera.position.y;
+      var cords = cartesianToInteraural(x1, x2, x3);
+      panner.update(cords.azm, cords.elv);
+    }
 
 
+  </script>
+  <p style="color:darkslategrey">Bee sound attribution: https://freesound.org/people/iainmccurdy/sounds/498416/</p>
+</body>
 
-    </script>
-
-  </body>
-
-  </html>
+</html>

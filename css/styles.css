@@ -1,7 +1,5 @@
     body {
-        background: #051622;
-        /* display: flex;
-    flex-direction: row; */
+        background: #03101a;
         justify-content: center;
         font-family: 'Open Sans', sans-serif;
         font-family: 'Roboto', sans-serif;
@@ -10,11 +8,11 @@
     }
     
     a:link {
-        color: #ccc;
+        color: #0b69a3;
     }
     
     a:visited {
-        color: #0b69a3;
+        color: #ccc;
     }
     
     h1 {
@@ -30,15 +28,9 @@
     .container {
         max-width: 750px;
         margin: auto;
-        /* display: flex;
-    align-items: flex-start;
-    flex-direction: column; */
-        /* background: #493f64; */
-        /* box-shadow: 3px 3px 2px 1px rgba(38, 38, 39, 0.2); */
+        background-color: #051622;
         color: #fff;
-        /* margin: 20px;
-    padding: 20px;
-    border-radius: 5px; */
+        padding: 50px;
     }
     
     .center {

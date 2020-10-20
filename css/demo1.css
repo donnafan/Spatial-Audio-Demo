@@ -115,3 +115,17 @@ select {
     border-style: solid;
     border-width: 25px 0 25px 45px;
   }
+
+a:link {
+    color:#433564;
+}
+
+a:visited {
+    color:#433564;
+}
+
+.attribution {
+    float: right;
+    margin-right: 20px;
+    color:#433564; 
+}
