@@ -11,17 +11,19 @@
 
 <body style="background-color: black;">
   <script src="js/hrtf.js"></script>
-  <div id="info">Click and drag to move around the model. The sound is coming from the camera.</div>
+  <div id="info">Wear headphones. Click and drag to move around the model. The sound is coming from the camera.</div>
   <div id="container"></div>
   <script type="module">
+    // declare variables for audio portion
     let audioElement;
     let audioContext;
     let hrtfContainer;
     let panner;
     let isPlaying
     let track = {
-      Audio: "0",
-      HeadShape: "0",
+      Audio: "0", // no default audio
+      HeadShape: "hrir/subject_040.bin", // default head shape = child
+      // play/pause function
       PlayPause: function () {
         if (audioContext.state === 'suspended') {
           audioContext.resume();
@@ -36,22 +38,25 @@
       }
     }
 
+    //call audio spatialization function with user selected audio and head shape
     spatialize(track.hrir, track.audio);
-    
+
+    // add user inputs
     import { GUI } from './jsm/libs/dat.gui.module.js';
     var gui = new GUI();
-    gui.add(track, "Audio", {Helicopter: "helicopter.wav", Bee: "bee.wav", Music: "etude.mp3" }).onChange(function (value) {
+    gui.add(track, "Audio", { Helicopter: "helicopter.wav", Bee: "bee.wav", Music: "etude.mp3" }).onChange(function (value) {
       audioElement.pause();
       spatialize(track.HeadShape, value)
     });
-    gui.add(track, "HeadShape", {Large_Male: "hrir/subject_003.bin", Small_Female: "hrir/subject_010.bin", Medium_Female: "hrir/subject_018.bin", Medium_Male: "hrir/subject_020.bin", Small_Male: "hrir/subject_027.bin", Large_Female: "hrir/subject_048.bin", Child: "hrir/subject_040.bin"}).onChange(function (value) {
+    gui.add(track, "HeadShape", { Large_Male: "hrir/subject_003.bin", Small_Female: "hrir/subject_010.bin", Medium_Female: "hrir/subject_018.bin", Medium_Male: "hrir/subject_020.bin", Small_Male: "hrir/subject_027.bin", Large_Female: "hrir/subject_048.bin", Child: "hrir/subject_040.bin" }).onChange(function (value) {
       audioElement.pause();
       isPlaying = false;
       spatialize(value, track.Audio);
     });
-    gui.add(track, "PlayPause");
+    gui.add(track, "PlayPause"); // add play/pause button
     gui.open();
 
+    //audio spatialization function
     function spatialize(hrir, audio) {
       hrtfContainer = new HRTFContainer();
       hrtfContainer.loadHrir(hrir);
@@ -59,11 +64,11 @@
       audioContext = new AudioContext();
       const audioSource = audioContext.createMediaElementSource(audioElement);
       var gain = audioContext.createGain();
-      gain.gain.value = 0.8;
-      audioSource.connect(gain, 0);
-      // create new hrtf panner, source node gets connected automatically
+      gain.gain.value = 0.8; // set default volume
+      audioSource.connect(gain, 0); // input channel 0 only to ensure source is mono
+      // create new hrtf panner which convolves input audio with HRTF
       panner = new HRTFPanner(audioContext, gain, hrtfContainer);
-      panner.connect(audioContext.destination);
+      panner.connect(audioContext.destination); //output audio from HRTF panner to user
       audioElement.play();
     }
 
@@ -72,37 +77,38 @@
     import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
     var container = document.getElementById('container');
-
+    // declare variables for visual portion
     var renderer, scene, camera, stats;
     var mesh;
     let x1, x2, x3
     var textureLoader = new THREE.TextureLoader();
-
+    // load visuals when page loads
     window.addEventListener('load', init);
 
+    // 3D visuals and controls
     function init() {
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       container.appendChild(renderer.domElement);
-
       scene = new THREE.Scene();
 
+      // add camera
       camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
       camera.position.z = 200;
       camera.target = new THREE.Vector3();
 
+      // add control of camera position
       var controls = new OrbitControls(camera, renderer.domElement);
       controls.minDistance = 200;
       controls.maxDistance = 200;
 
+      // add lighting
       scene.add(new THREE.AmbientLight(0x443333));
-
       var light = new THREE.DirectionalLight(0xffddcc, 1);
       light.position.set(1, 0.75, 0.5);
       scene.add(light);
-
       var light = new THREE.DirectionalLight(0xccccff, 1);
       light.position.set(- 1, 0.75, - 0.5);
       scene.add(light);
@@ -110,15 +116,19 @@
       var geometry = new THREE.BufferGeometry();
       geometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
 
+      // call function to load model
       loadLeePerrySmith();
 
+      // scale if user changes window size
       window.addEventListener('resize', onWindowResize, false);
-
       onWindowResize();
+
+      //call animation function
       animate();
 
     }
 
+    // loads model
     function loadLeePerrySmith() {
 
       var loader = new GLTFLoader();
@@ -133,6 +143,7 @@
 
     }
 
+    // scales scene with window size
     function onWindowResize() {
 
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -142,21 +153,25 @@
 
     }
 
+    // re-renders scene after user repositions camera
     function animate() {
 
       requestAnimationFrame(animate);
 
       renderer.render(scene, camera);
+      // convert camera coordinate system to HRTF panner cartesian coordinate system
       x1 = -1 * camera.position.x;
       x2 = camera.position.z;
       x3 = camera.position.y;
-      var cords = cartesianToInteraural(x1, x2, x3);
-      panner.update(cords.azm, cords.elv);
+      var cords = cartesianToInteraural(x1, x2, x3); // converts cartesian coordinate system to interaural coordinate system
+      panner.update(cords.azm, cords.elv); // updates HRTF panner with camera coordinates
     }
 
 
   </script>
-  <p style="color:darkslategrey">Sound attribution <a href=https://freesound.org/people/iainmccurdy/sounds/498416/>bee</a> <a href="https://icons8.com/music/author/ilya-truhanov-1">music by Ilya Truhanov</a></p>
+  <p style="color:darkslategrey">Sound attribution <a
+      href=https://freesound.org/people/iainmccurdy/sounds/498416 />bee</a> <a
+      href="https://icons8.com/music/author/ilya-truhanov-1">music by Ilya Truhanov</a></p>
 </body>
 
 </html>

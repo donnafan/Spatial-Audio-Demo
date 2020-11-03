@@ -1,18 +1,20 @@
-// query track selection
+// query track selection from user input
 const trackSelection = document.getElementById("trackSelection");
-trackSelection.addEventListener("change", function() {
-    audioElement.pause();
+trackSelection.addEventListener("change", function () {
+    audioElement.pause(); // pause audio if track changed
     isPlaying = false;
-    spatialWidget(this.value);
+    spatialDemo(this.value); // run audio spatialization function on selected track
 });
 
+// declare variables
 let isPlaying;
 let audioElement;
 let audioContext;
 
-spatialWidget(trackSelection.value);
+spatialDemo(trackSelection.value);
 
-function spatialWidget(track) {
+// audio spatialization function
+function spatialDemo(track) {
     audioElement = new Audio(track);
 
     audioContext = new AudioContext();
@@ -24,13 +26,12 @@ function spatialWidget(track) {
     const gainNodeR = new GainNode(audioContext);
     const delayNodeL = new DelayNode(audioContext);
     const delayNodeR = new DelayNode(audioContext);
-    const channelsCount = 2;
-    const splitterNode = new ChannelSplitterNode(audioContext, { numberOfOutputs: channelsCount });
-    const mergerNode = new ChannelMergerNode(audioContext, { numberOfInputs: channelsCount });
+    const splitterNode = new ChannelSplitterNode(audioContext, { numberOfOutputs: 2 });
+    const mergerNode = new ChannelMergerNode(audioContext, { numberOfInputs: 2 });
 
     //query user selected gain and delay
     const panControl = document.querySelector('#gainPan');
-    panControl.addEventListener('input', function() {
+    panControl.addEventListener('input', function () {
         panNode.pan.value = this.value;
         panValue = this.value;
         if (panValue <= 0) {
@@ -44,7 +45,7 @@ function spatialWidget(track) {
     }, false)
     delayNodeL.delayTime.value = 0.001
     const delayL = document.querySelector('#DelayL');
-    delayL.addEventListener('input', function() {
+    delayL.addEventListener('input', function () {
         delayNodeL.delayTime.value = this.value;
         if (this.value <= 0.001) {
             delayValueL.innerHTML = "0 ms"
@@ -57,9 +58,7 @@ function spatialWidget(track) {
     }, false);
     delayNodeR.delayTime.value = 0.001
 
-
-    //audioSource.connect(gainNode).connect(splitterNode)
-    audioSource.connect(panNode, 0).connect(splitterNode); //take only channel 0 if source is stereo
+    audioSource.connect(panNode, 0).connect(splitterNode); //take only channel 0 if source is stereo to make mono
     splitterNode.connect(delayNodeL, 0); // connect splitter output channel 0
     splitterNode.connect(delayNodeR, 1);
 
@@ -71,6 +70,7 @@ function spatialWidget(track) {
     mergerNode.connect(audioContext.destination);
 }
 
+// play/pause button function
 function playPause() {
     if (audioContext.state === 'suspended') {
         audioContext.resume();
